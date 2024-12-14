@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Sliders from './components/Sliders';
 import Buttons from './components/Buttons';
@@ -31,7 +31,14 @@ export default function App() {
 
   // Debounce search function
   const doSearch = (text: string) => {
-    setSearch(text);
+
+    if(text){
+      setSearch(text);
+    }else{
+      setSearch('');
+    }
+   
+
     if (timeoutId) {
       clearTimeout(timeoutId); // Clear previous timeout to avoid multiple calls
     }
@@ -57,7 +64,13 @@ export default function App() {
       }
 
       const json = await response.json();
-      setBooks(json.books);
+      // setBooks((prevBooks: any) => [...prevBooks, ...json.books]); // Append new books
+      setBooks((prevBooks:any) => {
+        const newBooks = json.books.filter(
+          (newBook: { _id: any; }) => !prevBooks.some((prevBook:any) => prevBook._id === newBook._id)
+        );
+        return [...prevBooks, ...newBooks];
+      });
     } catch (error) {
       console.error('Failed to fetch books:', error);
     } finally {
@@ -69,6 +82,18 @@ export default function App() {
     setBannerVisibility(value);
   };
 
+  const handleLoadMore = () => {
+    if (!loading) {
+      setPage(prevPage => prevPage + 1); // Increase page number when reaching the end
+    }
+  };
+
+  const renderItem = ({ item }: { item: any }) => (
+    <TouchableOpacity onPress={() => navigation.navigate('BookIndex', { bookId: item._id })}>
+      <BookCard book={item} />
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View>
@@ -78,23 +103,19 @@ export default function App() {
           <Buttons />
           <Search mySearch={doSearch} />
         </View>
-        <ScrollView contentContainerStyle={[styles.scrollViewContent]}>
-          {/* Scrollable Book Cards */}
-          {loading ? (
-            <Text style={styles.noBook}>Loading Books...</Text>
-          ) : books && books.length > 0 ? (
-            books.map((book: any, index: any) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => navigation.navigate('BookIndex', { bookId: book._id })}
-              >
-                <BookCard book={book} />
-              </TouchableOpacity>
-            ))
-          ) : (
-            <Text style={styles.noBook}>No Books Available...</Text>
-          )}
-        </ScrollView>
+
+        {/* FlatList for infinite scroll */}
+        <FlatList
+          data={books}
+          renderItem={renderItem}
+          keyExtractor={(item) => item._id}
+          onEndReached={handleLoadMore} // Trigger more data loading when scrolled to the end
+          onEndReachedThreshold={0.5} // Trigger when 50% of the content is visible
+          ListFooterComponent={
+            loading ? <Text style={styles.noBook}>Loading More...</Text> : null
+          }
+          contentContainerStyle={styles.scrollViewContent}
+        />
       </View>
 
       {/* Banner Ad */}
@@ -109,7 +130,6 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     marginTop: 320,
-    height: 'auto',
     backgroundColor: 'white',
     paddingBottom: 320,
   },
