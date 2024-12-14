@@ -1,69 +1,55 @@
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 
-export default function BookCard() {
+export default function BookCard(props: any) {
     return (
-        <View style={styles.container}>
-            <ImageBackground
-                source={require('../assets/icon.png')} // Path to your image
-                style={styles.card}
-                imageStyle={styles.cardImage} // Optional styling for the image itself
-            >           
-            </ImageBackground>
-
-            <View style={styles.detail}>
-                <View style={styles.title}>
-                    <Text>Saurastra Ni Rasdhar 1 </Text>
-                </View>
-
-                <View style={styles.author}>
-                    <Text>Zaverchande Meghani</Text>
-                </View>
-            </View>
+        <View style={styles.card}>
+        <Image
+         source={require('../assets/icon.png')} 
+        //  source={{ uri: props.image }} 
+         style={styles.image} />
+        <View style={styles.content}>
+          <Text style={styles.title}>
+            Saurastra Ni Rasdhar
+            {/* {props.title} */}
+            </Text>
+          <Text style={styles.author}>
+            Zaverchand Meghani
+            {/* {props.author} */}
+            </Text>
+          
         </View>
+      </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        margin: 10,
-        backgroundColor: 'yellow',
-        height: 200,
-        borderColor: 'red',
-        borderWidth: 2,
-        borderRadius: 5,
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 5,
-    },
     card: {
-        height: 180,
-        width: '30%', // Adjust width to fit within the container
-        borderColor: 'white',
-        borderWidth: 2,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
+      flexDirection: 'row', 
+      borderWidth: 1,
+      borderColor: '#ccc',
+      backgroundColor :'white',
+      borderRadius: 8,
+      padding: 10,
+      margin: 10,
+      alignItems: 'center',
     },
-    cardImage: {
-        borderRadius: 10, // Optional: if you want the image to have rounded corners
-        opacity: 0.7, // Optional: adjust opacity to blend the image with the content
-        width: "100%"
+    image: {
+      width: 100,
+      height: 150,
+      borderRadius: 8,
+      marginRight: 10,
     },
-    cardText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    detail: {
-        // width: '90%',
-        // justifyContent: 'flex-start',
-        // alignItems: 'center',
-        marginLeft: 10
+    content: {
+      flex: 1, // Take remaining space
     },
     title: {
-        marginLeft: 5,
+      fontSize: 20,
+      fontWeight: 'black'
     },
     author: {
-        marginLeft: 5,
+      fontSize: 16,
+      fontWeight: 'bold',
+      color : 'green'
     },
-});
+  });

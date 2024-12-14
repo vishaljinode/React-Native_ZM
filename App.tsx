@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import Sliders from './components/Sliders';
 import Buttons from './components/Buttons';
@@ -18,6 +18,8 @@ export default function App() {
   return (
     <SafeAreaView style={styles.safeArea}>
 
+      <View>
+
       {/* Scrollable Content */}
       <View style={styles.fixedHeader}>
         <Sliders />
@@ -25,21 +27,23 @@ export default function App() {
         <Search />
       </View>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollViewContent,
-          { paddingBottom: getBannerVisibility ?  380 :  350 }, 
-        ]}
+        contentContainerStyle={[styles.scrollViewContent]}
       >
         {/* Scrollable Book Cards */}
+        <TouchableOpacity>
+        <BookCard />
+        </TouchableOpacity>
+        <BookCard />
+        <BookCard />
         <BookCard />
         <BookCard />
         <BookCard />
         <BookCard />
         <BookCard />
       </ScrollView>
+      </View>
 
-      {/* Banner Ad at Fixed Position */}
-      {getBannerVisibility && <BannerAdComponent adUnit={adUnit} addVisibilityCheck={addVisibilityCheck} />}
+      {/* {getBannerVisibility && <BannerAdComponent adUnit={adUnit} addVisibilityCheck={addVisibilityCheck} />} */}
     </SafeAreaView>
   );
 }
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
     marginTop: 320,
     //  marginBottom: 200, 
     height: 'auto',
-    backgroundColor: 'pink',
+    backgroundColor: 'white',
     paddingBottom: 320
   },
   fixedHeader: {
@@ -61,7 +65,7 @@ const styles = StyleSheet.create({
 //    top: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'pink',
+    backgroundColor: 'white',
     zIndex: 1,
 
 
