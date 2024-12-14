@@ -5,17 +5,16 @@ export default function BookCard(props: any) {
     return (
         <View style={styles.card}>
         <Image
-         source={require('../assets/icon.png')} 
-        //  source={{ uri: props.image }} 
+        //  source={require('../assets/icon.png')} 
+         source={{ uri: props.book.bookImage.mediaUrl }} 
          style={styles.image} />
         <View style={styles.content}>
           <Text style={styles.title}>
-            Saurastra Ni Rasdhar
-            {/* {props.title} */}
+            {/* Saurastra Ni Rasdhar */}
+            {props.book.bookName}
             </Text>
           <Text style={styles.author}>
-            Zaverchand Meghani
-            {/* {props.author} */}
+          {props.book.author}
             </Text>
           
         </View>

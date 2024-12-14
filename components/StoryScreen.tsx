@@ -1,62 +1,75 @@
-// Import necessary types from react-navigation
-import { RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { API_BASE_URL } from '../Api_urls';
+import { useNavigation } from '@react-navigation/native';
 
-// Define types for navigation and route params
-type RootStackParamList = {
-  Home: undefined;
-  BookIndex: { bookId: string };
-  Story: { storyId: string };  // Define the param type for "Story" screen
-};
 
-// Type for StoryScreen props
-type StoryScreenProps = {
-  route: RouteProp<RootStackParamList, 'Story'>;
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Story'>;
-};
 
-const StoryScreen = ({ route, navigation }: StoryScreenProps) => {
-  const { storyId } = route.params;
-  const [story, setStory] = useState<string>('');
-  const [loading, setLoading] = useState(true);
 
-  // Fetch the story data based on the `storyId`
+
+const StoryScreen = (props: any) => {
+  const navigation = useNavigation();
+  const { storyId } = props.route.params;
+  
+  const [books, setBooks] = useState<any>([]);
+
+
   useEffect(() => {
-    fetchStory(storyId);
-  }, [storyId]);
+    fetchStory();
+  }, []);
 
-  const fetchStory = async (id: string) => {
+  useLayoutEffect(() => {
+    if (books?.title) {
+      navigation.setOptions({
+        title: books.title,
+      });
+    }
+  }, [navigation, books?.title]);
+
+
+
+  const fetchStory = async () => {
     try {
-      const response = await fetch(`API_URL_TO_FETCH_STORY/${id}`);
-      const data = await response.json();
-      setStory(data.description);  // assuming `description` is the story content
+      const response = await fetch(
+        API_BASE_URL + '/book/getStoryByStroyId',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ storyId: storyId }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch books');
+      }
+
+      const json = await response.json();
+
+      console.log(" this is story :-------->", json)
+      setBooks(json.book);
+
     } catch (error) {
-      console.error("Failed to fetch story", error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch books:', error);
+      // Handle error state or show an error message
     }
   };
 
-  // Update the header title dynamically once the story data is fetched
-  useLayoutEffect(() => {
-    if (!loading) {
-      navigation.setOptions({
-        title: "Story Title",  // Replace with actual title from story data
-      });
-    }
-  }, [loading]);
+
+
+
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <ScrollView>
-          <Text>{story}</Text>
-        </ScrollView>
-      )}
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {books ? <Text style={styles.story}>
+          {books?.description}
+        </Text> :
+          <Text>Loading Story...</Text>
+
+        }
+      </ScrollView>
     </View>
   );
 };
@@ -64,7 +77,32 @@ const StoryScreen = ({ route, navigation }: StoryScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    // marginTop: 
+  },
+  header: {
+    backgroundColor: '#f0f0f0',
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    zIndex: 100,
+    marginTop: 50
+  },
+  scrollViewContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+
+  story: {
+    fontSize: 16,
+    textAlign: 'left',
+    fontWeight: 'bold',
+    lineHeight: 24,
+
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 

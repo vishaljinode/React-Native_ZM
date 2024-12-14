@@ -1,8 +1,18 @@
 import { Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 
-export default function Search() {
-  const [text, onChangeText] = React.useState('Useless Text');
+export default function Search(props: any) {
+  const [text, onChangeText] = React.useState('');
+
+  const handleSearch = () => {
+    // if (text.trim()) {
+      // Call the mySearch function passed via props and pass the text value
+      props.mySearch(text);
+    // } else {
+    //   // Show an alert if the search text is empty
+    //   Alert.alert('Please enter a search term');
+    // }
+  };
 
   return (
     <View>
@@ -11,16 +21,12 @@ export default function Search() {
           style={styles.input}
           onChangeText={onChangeText}
           value={text}
+          placeholder='Search books...'
         />
 
-        <TouchableOpacity style={styles.searchButton}
-          onPress={() => Alert.alert('Simple Search Button pressed')}
-        >
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.buttonText}>Search</Text>
         </TouchableOpacity>
-
-
-
       </View>
     </View>
   );
@@ -33,8 +39,6 @@ const styles = StyleSheet.create({
     height: 50,
     flexDirection: 'row',  // Ensures horizontal layout
     alignItems: 'center',  // Vertically center elements
-    // borderColor: 'black',
-    // borderWidth: 2,
   },
   input: {
     height: 50,

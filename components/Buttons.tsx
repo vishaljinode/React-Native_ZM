@@ -7,7 +7,7 @@ const openPlayStore = () => {
 };
 
 const openInstagramProfile = () => {
-  const url = 'https://www.instagram.com/zaverchand.meghani/';
+  const url = 'https://www.instagram.com/zaverchand.meghani';
   Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
 };
 
