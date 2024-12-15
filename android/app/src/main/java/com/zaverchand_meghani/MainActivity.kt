@@ -1,4 +1,4 @@
-package com.zaverchand_meghani
+package com.javerchand_meghani.zaverchand_meghani
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

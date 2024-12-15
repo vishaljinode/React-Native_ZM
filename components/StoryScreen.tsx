@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { API_BASE_URL } from '../Api_urls';
 import { useNavigation } from '@react-navigation/native';
+import BannerAdComponent from './BannerAd';
 
 
 
@@ -10,7 +11,9 @@ import { useNavigation } from '@react-navigation/native';
 const StoryScreen = (props: any) => {
   const navigation = useNavigation();
   const { storyId } = props.route.params;
-  
+  // const adUnit = 'ca-app-pub-3940256099942544/6300978111'; // Test Ad ID
+  const adUnit = 'ca-app-pub-9861920280316596/6295878862'; // Live Ad ID
+  const [getBannerVisibility, setBannerVisibility] = useState(true);
   const [books, setBooks] = useState<any>([]);
 
 
@@ -26,7 +29,9 @@ const StoryScreen = (props: any) => {
     }
   }, [navigation, books?.title]);
 
-
+  const addVisibilityCheck = (value: boolean) => {
+    setBannerVisibility(value);
+  };
 
   const fetchStory = async () => {
     try {
@@ -61,36 +66,42 @@ const StoryScreen = (props: any) => {
 
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {books ? <Text style={styles.story}>
-          {books?.description}
-        </Text> :
-          <Text>Loading Story...</Text>
+    <>
+      <View style={[styles.container , { marginBottom: getBannerVisibility ? 60 : 0 }] }>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          {books ? <Text style={styles.story}>
+            {books?.description}
+          </Text> :
+            <Text>Loading Story...</Text>
 
-        }
-      </ScrollView>
-    </View>
+          }
+        </ScrollView>
+
+        {/* Banner Ad */}
+
+      </View>
+
+      <View>
+
+        {getBannerVisibility && <BannerAdComponent adUnit={adUnit} addVisibilityCheck={addVisibilityCheck}/>}
+
+      </View>
+
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // marginTop: 
+    marginBottom: 0 
   },
-  header: {
-    backgroundColor: '#f0f0f0',
-    padding: 12,
-    marginBottom: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    zIndex: 100,
-    marginTop: 50
-  },
+
   scrollViewContent: {
     paddingHorizontal: 20,
     paddingTop: 20,
+    marginBottom: 20,
+    // backgroundColor: 'green'
   },
 
   story: {
@@ -99,11 +110,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     lineHeight: 24,
 
+
   },
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
   },
+ 
 });
 
 export default StoryScreen;

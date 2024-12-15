@@ -1,5 +1,6 @@
 import { Alert, Button, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
+import RenderHTML from 'react-native-render-html';
 
 const openPlayStore = () => {
   const url = 'market://details?id=com.javerchand_meghani.zaverchand_meghani';
@@ -103,7 +104,7 @@ export default function Buttons() {
   return (
     <View>
       <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={openPlayStore}>
+        <TouchableOpacity style={styles.button} onPress={openPlayStore}>
           <Text style={styles.buttonText}>Rating</Text>
         </TouchableOpacity>
 
@@ -114,6 +115,29 @@ export default function Buttons() {
         <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
           <Text style={styles.buttonText}>Privacy Policy</Text>
         </TouchableOpacity>
+
+        <Modal
+          animationType="slide" // Can be "fade" or "slide"
+          transparent={true} // Makes background semi-transparent
+          visible={modalVisible} // Controls visibility of the modal
+          onRequestClose={() => setModalVisible(false)} // Android back button handler
+        >
+          {/* Modal content */}
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>
+                <ScrollView>
+                  <RenderHTML
+                    contentWidth={300} // Adjust to your container width
+                    source={{ html: htmlContent }} // Your HTML content here
+                  />
+                </ScrollView>
+              </Text>
+              {/* Button to close the modal */}
+              <Button title="Close Modal" onPress={() => setModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
       </View>
     </View>
   )
@@ -146,9 +170,31 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign : 'center'
+    textAlign: 'center'
   },
 
+
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    // marginBottom: 10
+  },
+  modalContent: {
+    width: 300,
+    padding: 10,
+    marginBottom:50,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+    backgroundColor: 'white',
+  },
 
 
 

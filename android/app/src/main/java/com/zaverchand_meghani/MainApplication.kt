@@ -1,4 +1,4 @@
-package com.zaverchand_meghani
+package com.javerchand_meghani.zaverchand_meghani
 
 import android.app.Application
 import com.facebook.react.PackageList

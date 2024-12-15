@@ -1,5 +1,5 @@
 import { SafeAreaView, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sliders from './components/Sliders';
 import Buttons from './components/Buttons';
 import Search from './components/Search';
@@ -8,10 +8,11 @@ import BannerAdComponent from './components/BannerAd';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from './Api_urls.js';
 
-export default function App() {
-  const adUnit = 'ca-app-pub-3940256099942544/6300978111'; // Test Ad ID
 
-  const [getBannerVisibility, setBannerVisibility] = useState(true);
+
+export default function App() {
+  // const adUnit = 'ca-app-pub-3940256099942544/6300978111'; // Test Ad ID
+  // const [getBannerVisibility, setBannerVisibility] = useState(true);
   const [books, setBooks] = useState<any>([]);
   const navigation = useNavigation<Navigation>();
   const [loading, setLoading] = useState(false);
@@ -19,44 +20,41 @@ export default function App() {
   const [limit, setLimit] = useState(25);
   const [page, setPage] = useState(0);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
-  const [timeoutId, setTimeoutId] = useState<any>(null);
+  const timeoutIdRef = useRef<any>(null); // Using useRef to store timeoutId
+  const [hasMore, setHasMore] = useState(true);  // Track if more data is available
 
   type Navigation = {
     navigate: (screen: string, params: { bookId: string }) => void;
   };
 
   useEffect(() => {
-    fetchBooks();
-  }, [debouncedSearch, page, limit]);  
+    if (hasMore) {
+      fetchBooks();
+    }
+  }, [debouncedSearch, page, limit, hasMore]);
 
   // Debounce search function
   const doSearch = (text: string) => {
+    setSearch(text); // Update search immediately
 
-    if(text){
-      setSearch(text);
-    }else{
-      setSearch('');
-    }
-   
-
-    if (timeoutId) {
-      clearTimeout(timeoutId); // Clear previous timeout to avoid multiple calls
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current); // Clear previous timeout to avoid multiple calls
     }
 
-    const id = setTimeout(() => {
-      setDebouncedSearch(text);  // Set the debounced search value
+    timeoutIdRef.current = setTimeout(() => {
+      setDebouncedSearch(text);  // Set the debounced search value after delay
     }, 500);  // 500ms delay before triggering search API
-    setTimeoutId(id);
   };
 
   const fetchBooks = async () => {
     setLoading(true);
     try {
+      const searchQuery = debouncedSearch ? `&search=${debouncedSearch}` : '';  // Only add search param if there's a search term
+
+      console.log("URL------->",       `${API_BASE_URL}/book/getBooks?limit=${limit}&page=${page}${searchQuery}`,)
       const response = await fetch(
-        `${API_BASE_URL}/book/getBooks?limit=${limit}&page=${page}&search=${debouncedSearch}`,
-        {
-          method: 'GET',
-        }
+        `${API_BASE_URL}/book/getBooks?limit=${limit}&page=${page}${searchQuery}`,
+        { method: 'GET' }
       );
 
       if (!response.ok) {
@@ -64,13 +62,17 @@ export default function App() {
       }
 
       const json = await response.json();
-      // setBooks((prevBooks: any) => [...prevBooks, ...json.books]); // Append new books
-      setBooks((prevBooks:any) => {
+      setBooks((prevBooks: any) => {
         const newBooks = json.books.filter(
-          (newBook: { _id: any; }) => !prevBooks.some((prevBook:any) => prevBook._id === newBook._id)
+          (newBook: { _id: any; }) => !prevBooks.some((prevBook: any) => prevBook._id === newBook._id)
         );
         return [...prevBooks, ...newBooks];
       });
+
+      // Check if more books are available
+      setHasMore(json.totalCount > (page * limit));  
+      // setHasMore(json.totalCount > (page + 1) * limit);
+
     } catch (error) {
       console.error('Failed to fetch books:', error);
     } finally {
@@ -78,12 +80,10 @@ export default function App() {
     }
   };
 
-  const addVisibilityCheck = (value: boolean) => {
-    setBannerVisibility(value);
-  };
+
 
   const handleLoadMore = () => {
-    if (!loading) {
+    if (!loading && hasMore) {
       setPage(prevPage => prevPage + 1); // Increase page number when reaching the end
     }
   };
@@ -101,7 +101,7 @@ export default function App() {
         <View style={styles.fixedHeader}>
           <Sliders />
           <Buttons />
-          <Search mySearch={doSearch} />
+          {/* <Search mySearch={doSearch} /> */}
         </View>
 
         {/* FlatList for infinite scroll */}
@@ -112,14 +112,13 @@ export default function App() {
           onEndReached={handleLoadMore} // Trigger more data loading when scrolled to the end
           onEndReachedThreshold={0.5} // Trigger when 50% of the content is visible
           ListFooterComponent={
-            loading ? <Text style={styles.noBook}>Loading More...</Text> : null
+            loading ? <Text style={styles.noBook}>Loading...</Text> : null
           }
           contentContainerStyle={styles.scrollViewContent}
         />
       </View>
 
-      {/* Banner Ad */}
-      {/* {getBannerVisibility && <BannerAdComponent adUnit={adUnit} addVisibilityCheck={addVisibilityCheck} />} */}
+     
     </SafeAreaView>
   );
 }
@@ -129,9 +128,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContent: {
-    marginTop: 320,
+    marginTop: 270,
     backgroundColor: 'white',
-    paddingBottom: 320,
+    paddingBottom: 270,
   },
   fixedHeader: {
     position: 'absolute',

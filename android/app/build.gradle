@@ -77,20 +77,20 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.zaverchand_meghani"
+    namespace "com.javerchand_meghani.zaverchand_meghani"
     defaultConfig {
-        applicationId "com.zaverchand_meghani"
+        applicationId "com.javerchand_meghani.zaverchand_meghani"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 8
+        versionName "8.0"
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('@vishaljinode__ZaverchandMeghaniApp.jks')
+            storePassword '834fa104cdc05bd38ced2766bb196d31'
+            keyAlias '217e31f3b2ce77ab87bf158f036c4040'
+            keyPassword '922f87ff35654a2b511089aad7776ca7'
         }
     }
     buildTypes {

@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    // backgroundColor: 'green',
+    //  backgroundColor: 'orange',
     marginTop: 100,
-    paddingBottom: 5,
+    padding: 4
   },
 });
