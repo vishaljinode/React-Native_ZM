@@ -51,7 +51,7 @@ export default function App() {
     try {
       const searchQuery = debouncedSearch ? `&search=${debouncedSearch}` : '';  // Only add search param if there's a search term
 
-      console.log("URL------->",       `${API_BASE_URL}/book/getBooks?limit=${limit}&page=${page}${searchQuery}`,)
+      // console.log("URL------->",       `${API_BASE_URL}/book/getBooks?limit=${limit}&page=${page}${searchQuery}`,)
       const response = await fetch(
         `${API_BASE_URL}/book/getBooks?limit=${limit}&page=${page}${searchQuery}`,
         { method: 'GET' }

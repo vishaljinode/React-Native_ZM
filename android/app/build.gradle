@@ -82,12 +82,12 @@ android {
         applicationId "com.javerchand_meghani.zaverchand_meghani"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "8.0"
+        versionCode 9
+        versionName "9.0.0"
     }
     signingConfigs {
         debug {
-            storeFile file('@vishaljinode__ZaverchandMeghaniApp.jks')
+            storeFile file('ZaverchandMeghaniApp.keystore')
             storePassword '834fa104cdc05bd38ced2766bb196d31'
             keyAlias '217e31f3b2ce77ab87bf158f036c4040'
             keyPassword '922f87ff35654a2b511089aad7776ca7'

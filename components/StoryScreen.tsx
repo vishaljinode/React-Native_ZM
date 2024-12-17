@@ -52,7 +52,7 @@ const StoryScreen = (props: any) => {
 
       const json = await response.json();
 
-      console.log(" this is story :-------->", json)
+      // console.log(" this is story :-------->", json)
       setBooks(json.book);
 
     } catch (error) {
