@@ -1,24 +1,23 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { API_BASE_URL } from '../Api_urls';
+
 import { useNavigation } from '@react-navigation/native';
 import BannerAdComponent from './BannerAd';
-
-
+import { API_BASE_URL, adUnit } from '../Api_urls.js';
 
 
 
 const StoryScreen = (props: any) => {
   const navigation = useNavigation();
   const { storyId } = props.route.params;
-  // const adUnit = 'ca-app-pub-3940256099942544/6300978111'; // Test Ad ID
-  const adUnit = 'ca-app-pub-9861920280316596/6295878862'; // Live Ad ID
+ 
   const [getBannerVisibility, setBannerVisibility] = useState(true);
   const [books, setBooks] = useState<any>([]);
 
 
   useEffect(() => {
     fetchStory();
+
   }, []);
 
   useLayoutEffect(() => {
@@ -67,7 +66,7 @@ const StoryScreen = (props: any) => {
 
   return (
     <>
-      <View style={[styles.container , { marginBottom: getBannerVisibility ? 60 : 0 }] }>
+      <View style={[styles.container] }>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           {books ? <Text style={styles.story}>
             {books?.description}
@@ -83,7 +82,8 @@ const StoryScreen = (props: any) => {
 
       <View>
 
-        {getBannerVisibility && <BannerAdComponent adUnit={adUnit} addVisibilityCheck={addVisibilityCheck}/>}
+        {/* {getBannerVisibility && <BannerAdComponent adUnit={adUnit} addVisibilityCheck={addVisibilityCheck}/>} */}
+       <BannerAdComponent adUnit={adUnit} addVisibilityCheck={addVisibilityCheck}/>
 
       </View>
 
@@ -94,7 +94,7 @@ const StoryScreen = (props: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: 0 
+    marginBottom: 60 
   },
 
   scrollViewContent: {

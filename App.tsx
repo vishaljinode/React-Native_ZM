@@ -11,8 +11,7 @@ import { API_BASE_URL } from './Api_urls.js';
 
 
 export default function App() {
-  // const adUnit = 'ca-app-pub-3940256099942544/6300978111'; // Test Ad ID
-  // const [getBannerVisibility, setBannerVisibility] = useState(true);
+
   const [books, setBooks] = useState<any>([]);
   const navigation = useNavigation<Navigation>();
   const [loading, setLoading] = useState(false);

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { API_BASE_URL } from '../Api_urls.js';
+import { API_BASE_URL, interstitialUnit } from '../Api_urls.js';
 import { RootStackParamList } from '../types'; 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { InterstitialAd, AdEventType } from 'react-native-google-mobile-ads';
 
 // Define types for Book
 interface Book {
@@ -16,13 +17,51 @@ const BookIndex = ({ route }: any) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Book[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [initAd, setInitAd] = useState<any>(null);
   
   // Use the typed useNavigation hook
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'BookIndex'>>();
 
   useEffect(() => {
+    // Load the interstitial ad when the component mounts
+    initial();
     fetchIndex();
   }, []);
+
+  const initial = async () => {
+    // Initialize the interstitial ad
+    const interAd = InterstitialAd.createForAdRequest(interstitialUnit);
+
+    // Listen for when the ad is loaded
+    interAd.addAdEventListener(AdEventType.LOADED, () => {
+      setInitAd(interAd); // Set the ad once it's loaded
+      console.log("Init ad loaded");
+    });
+
+    // Optionally listen for when the ad is closed
+    interAd.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log("Init ad closed");
+    });
+
+    // Load the ad
+    interAd.load();
+  };
+
+  const showInitAd = async (item: any) => {
+    // Ensure the ad is loaded before navigating to the next screen
+    if (initAd) {
+      // Navigate to the Story screen first, then show the ad
+      navigation.navigate('Story', { storyId: item._id });
+
+      // Show the interstitial ad if it's loaded
+      initAd.show().catch((error: any) => {
+        console.log('Error showing ad:', error);
+      });
+    } else {
+      // If the ad isn't loaded, navigate without showing it
+      navigation.navigate('Story', { storyId: item._id });
+    }
+  };
 
   const fetchIndex = async () => {
     setLoading(true);
@@ -81,8 +120,9 @@ const BookIndex = ({ route }: any) => {
           <TouchableOpacity
             style={styles.item}
             key={item._id}
-            onPress={() => navigation.navigate('Story', { storyId: item._id })} // TypeScript will now allow this
-          >
+            onPress={() => {
+              showInitAd(item); // This will show the interstitial ad
+            }} >
             <Text style={styles.title}>{item.title}</Text>
           </TouchableOpacity>
         ))}
